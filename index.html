@@ -56,6 +56,18 @@ button:focus-visible,a:focus-visible,canvas:focus-visible{outline:3px solid var(
 .rotate{display:none;position:absolute;inset:0;background:rgba(5,3,15,.93);flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:12px}
 @media (orientation:portrait) and (max-width:760px){.rotate{display:flex}}
 .rotate svg{animation:spin 2s ease-in-out infinite}
+.ov{position:absolute;inset:0;background:rgba(5,3,15,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:min(12px,2.4vh);padding:10px;text-align:center;z-index:5}
+.ov .t{font-family:var(--px);font-size:clamp(12px,3.6vh,18px);color:var(--y)}
+.ov .s{font-family:var(--px);font-size:clamp(9px,2.6vh,12px);color:var(--c)}
+.ov input{font-family:var(--px);font-size:16px;text-transform:uppercase;text-align:center;width:min(300px,80%);padding:10px;background:var(--bg);color:var(--ink);border:3px solid var(--c)}
+.ov .row{display:flex;gap:10px}
+.ov .row button,.ov>button{font-family:var(--px);font-size:10px;padding:0 14px;height:40px;border:3px solid var(--ink);color:var(--bg);background:var(--y)}
+.ov .row button.ghost{background:transparent;color:var(--ink);border-color:#5A54A8}
+.lb{list-style:none;margin:0;padding:0;font-family:var(--px);font-size:clamp(9px,2.6vh,12px);line-height:1.9;columns:2;column-gap:28px;text-align:left}
+.lb li{white-space:nowrap;color:var(--ink)}
+.lb li b{color:var(--y);font-weight:400;display:inline-block;min-width:3ch}
+.lb li.me{color:var(--p)}
+.lb li span{color:var(--c)}
 .rotate button{font-family:var(--px);font-size:9px;color:var(--ink);background:transparent;border:2px solid #5A54A8;padding:12px;min-height:44px}
 
 #fab{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--y);border:4px solid var(--ink);box-shadow:5px 5px 0 var(--p);padding:8px 10px 10px;animation:pulse 1.6s ease-in-out infinite}
@@ -112,6 +124,17 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
       <svg aria-hidden="true" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FFD23F" stroke-width="2" stroke-linecap="square"><rect x="7" y="2" width="10" height="20" rx="1"></rect><path d="M11 18h2"></path></svg>
       <div class="px" style="font-size:11px;color:var(--y);line-height:1.6">TURN YOUR PHONE SIDEWAYS</div>
       <button type="button" data-act="rotateok">PLAY ANYWAY</button>
+    </div>
+    <form class="ov" id="entry" hidden>
+      <div class="t">NEW HIGH SCORE!</div>
+      <div class="s" id="entryScore"></div>
+      <input id="nameIn" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="YOUR NAME" aria-label="Your name for the high score list">
+      <div class="row"><button type="submit">SAVE</button><button type="button" class="ghost" data-act="skip">SKIP</button></div>
+    </form>
+    <div class="ov" id="board" hidden>
+      <div class="t">HIGH SCORES</div>
+      <ol class="lb" id="boardList"></ol>
+      <button type="button" data-act="again">PLAY AGAIN</button>
     </div>
   </div>
   <div id="bar">
@@ -170,6 +193,11 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
   </div>
 
   <div class="sec">
+    <h2 style="color:var(--y)">HIGH SCORES</h2>
+    <div class="panel" style="border-color:var(--y)"><ol class="lb" id="pageBoard"></ol><div id="pageBoardEmpty" style="color:var(--muted)">No scores yet. Be the first!</div></div>
+  </div>
+
+  <div class="sec">
     <h2 style="color:#FF4D4D">ENEMIES OF FUN</h2>
     <div class="cards">
       <div class="card bad"><svg class="q13bob" aria-hidden="true" width="80" height="80" viewBox="0 0 16 16" shape-rendering="crispEdges" style="display: block"><rect x="4" y="2" width="8" height="1" fill="#05030F"></rect><rect x="3" y="3" width="1" height="1" fill="#05030F"></rect><rect x="4" y="3" width="8" height="1" fill="#F4F2FF"></rect><rect x="12" y="3" width="1" height="1" fill="#05030F"></rect><rect x="3" y="4" width="1" height="1" fill="#05030F"></rect><rect x="4" y="4" width="1" height="1" fill="#F4F2FF"></rect><rect x="5" y="4" width="6" height="1" fill="#7FA7FF"></rect><rect x="11" y="4" width="1" height="1" fill="#F4F2FF"></rect><rect x="12" y="4" width="1" height="1" fill="#05030F"></rect><rect x="3" y="5" width="1" height="1" fill="#05030F"></rect><rect x="4" y="5" width="8" height="1" fill="#F4F2FF"></rect><rect x="12" y="5" width="1" height="1" fill="#05030F"></rect><rect x="3" y="6" width="1" height="1" fill="#05030F"></rect><rect x="4" y="6" width="1" height="1" fill="#F4F2FF"></rect><rect x="5" y="6" width="5" height="1" fill="#7FA7FF"></rect><rect x="10" y="6" width="2" height="1" fill="#F4F2FF"></rect><rect x="12" y="6" width="1" height="1" fill="#05030F"></rect><rect x="2" y="7" width="2" height="1" fill="#05030F"></rect><rect x="4" y="7" width="1" height="1" fill="#F4F2FF"></rect><rect x="5" y="7" width="2" height="1" fill="#05030F"></rect><rect x="7" y="7" width="2" height="1" fill="#F4F2FF"></rect><rect x="9" y="7" width="2" height="1" fill="#05030F"></rect><rect x="11" y="7" width="1" height="1" fill="#F4F2FF"></rect><rect x="12" y="7" width="1" height="1" fill="#05030F"></rect><rect x="2" y="8" width="1" height="1" fill="#05030F"></rect><rect x="3" y="8" width="3" height="1" fill="#F4F2FF"></rect><rect x="6" y="8" width="1" height="1" fill="#05030F"></rect><rect x="7" y="8" width="2" height="1" fill="#F4F2FF"></rect><rect x="9" y="8" width="1" height="1" fill="#05030F"></rect><rect x="10" y="8" width="3" height="1" fill="#F4F2FF"></rect><rect x="13" y="8" width="1" height="1" fill="#05030F"></rect><rect x="2" y="9" width="1" height="1" fill="#05030F"></rect><rect x="3" y="9" width="10" height="1" fill="#F4F2FF"></rect><rect x="13" y="9" width="1" height="1" fill="#05030F"></rect><rect x="2" y="10" width="1" height="1" fill="#05030F"></rect><rect x="3" y="10" width="1" height="1" fill="#F4F2FF"></rect><rect x="4" y="10" width="2" height="1" fill="#7FA7FF"></rect><rect x="6" y="10" width="4" height="1" fill="#E0403A"></rect><rect x="10" y="10" width="2" height="1" fill="#7FA7FF"></rect><rect x="12" y="10" width="1" height="1" fill="#F4F2FF"></rect><rect x="13" y="10" width="1" height="1" fill="#05030F"></rect><rect x="2" y="11" width="1" height="1" fill="#05030F"></rect><rect x="3" y="11" width="10" height="1" fill="#F4F2FF"></rect><rect x="13" y="11" width="1" height="1" fill="#05030F"></rect><rect x="2" y="12" width="12" height="1" fill="#05030F"></rect><rect x="2" y="13" width="1" height="1" fill="#05030F"></rect><rect x="3" y="13" width="10" height="1" fill="#FF4D4D"></rect><rect x="13" y="13" width="1" height="1" fill="#05030F"></rect><rect x="2" y="14" width="12" height="1" fill="#05030F"></rect></svg><div class="n">HOMEWORK</div><div class="d">Due tomorrow</div></div>
@@ -196,6 +224,7 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
 (function () {
 const CONFIG = {
   timeSlot: '12:00 – 2:00 PM',      // or '4:00 – 6:00 PM'
+  scoresUrl: '',                    // Google Apps Script web app URL for a shared leaderboard
   rsvpUrl: 'https://forms.gle/REPLACE_ME'
 };
 const SPR = {"hero":{"r":["................",".....KKKKKK.....","....KHHHHHHK....","...KHHLHHHHHK...","...KHHHHHHHSK...","...KFFFSSFFFK...","...KFEFFFFEFK...","...KFFFSSFFFK...","...KSSSMMSSSK...","....KKSSSSKK....","...KRRRKKRRRK...","..KRRRRKKRRRRK..","..KSRBRKKRBRSK..","...KRRRKKRRRK...","....KDDK.KDDK...","...KWWXK.KWWXK.."],"p":{"K":"#05030F","H":"#5A3A22","L":"#8A6040","S":"#F2C7A5","F":"#05030F","E":"#BFD8EE","M":"#B5523B","R":"#7A1F2B","B":"#1A1A1A","D":"#1E1E28","W":"#FFFFFF","X":"#E0403A"}},"slime":{"r":["................","................",".......KK.......","......KGGK......",".....KGGGGK.....","....KGGLGGGK....","...KGGLLGGGGK...","...KGGGGGGGGK...","..KGGWKGGWKGGK..","..KGGKKGGKKGGK..","..KGGGGGGGGGGK..","..KGGGMMMMGGGK..",".KGGGGGGGGGGGGK.",".KGGGGGGGGGGGGK.","..KKKKKKKKKKKK..","................"],"p":{"K":"#05030F","G":"#3BD16F","L":"#A8F5BE","W":"#FFFFFF","M":"#05030F"}},"byte":{"r":["................","..K.........K...","..KK.......KK...","..KOK.....KOK...","..KOOKKKKKOOK...","..KOOOOOOOOOK...",".KOOWKOOOWKOOK..",".KOOKKOOOKKOOK..",".KOOOOOOOOOOOK..",".KOOOYYYYYOOOK..","..KOOOYYYOOOK...","...KOOOOOOOK....","...KOKOOOKOK....","...KOK...KOK....","...KKK...KKK....","................"],"p":{"K":"#05030F","O":"#9B5CFF","Y":"#FFD23F","W":"#FFFFFF"}},"bot":{"r":["................",".......KK.......",".......RR.......","....KKKKKKKK....","...KAAAAAAAAK...","...KACCAACCAK...","...KACKAACKAK...","...KAAAAAAAAK...","...KAKKKKKKAK...","....KKKKKKKK....","..KKAAAAAAAAKK..","..KAKAAYYAAKAK..","..KAKAAAAAAKAK..","....KAAAAAAK....","....KAK..KAK....","....KKK..KKK...."],"p":{"K":"#05030F","A":"#B8C4D9","C":"#3DDCFF","R":"#FF4D4D","Y":"#FFD23F"}},"cupcake":{"r":[".......YY.......",".......RR.......",".....KKKKKK.....","....KPPWPPPK....","...KPWPPPPWPK...","...KPPPPPPPPK...","..KPPKWPPKWPPK..","..KPPKKPPKKPPK..","..KPPPPMMPPPPK..","...KKKKKKKKKK...","...KTBTBTBTBK...","...KTBTBTBTBK...","....KTBTBTBK....","....KTBTBTBK....",".....KKKKKK.....","................"],"p":{"K":"#05030F","Y":"#FFD23F","R":"#FF4D4D","P":"#FF8CC6","W":"#FFFFFF","M":"#05030F","T":"#E0B07A","B":"#9A6234"}},"balloon":{"r":["................",".....KKKKK......","....KRRRRRK.....","...KRRWRRRRK....","...KRWRRRRRK....","...KRRKRRKRK....","...KRRKRRKRK....","...KRRRRRRRK....","...KRRMMMRRK....","....KRRRRRK.....",".....KRRRK......","......KRK.......",".......W........","......W.........",".......W........","......W........."],"p":{"K":"#05030F","R":"#FF4D6A","W":"#F4F2FF","M":"#05030F"}},"pup":{"r":[".......Y........","......KCK.......",".....KCCCK......","....KCYCCCK.....","..KKKKKKKKKKK...",".KBKTTTTTTTKBK..",".KBKTWKTTWKTBK..",".KBKTKKTTKKTBK..","..KKTTTKKTTTKK..","....KTTTTTTK....","....KTTRRTTK....","...KTTTTTTTTK.T.","...KTTTTTTTTKKT.","...KTKTTTTKTK...","...KKK....KKK...","................"],"p":{"K":"#05030F","Y":"#FFD23F","C":"#3DDCFF","B":"#8A5A2B","T":"#E8C08A","W":"#FFFFFF","R":"#FF5DA2"}},"wiz":{"r":["........K.......",".......KPK......","......KPPPK.....",".....KPYPPPK....","....KPPPPPPPK...","..KKKKKKKKKKKKK.","....KSSSSSSSK...","....KSKSSSKSK...","....KSSSSSSSK...","....KWWWWWWWK...","...KWWWMMWWWWK..","...KPWWWWWWWPK..","...KPPWWWWWPPK..","...KPPPWWWPPPK..","...KPPPPPPPPPK..","...KKKKKKKKKKK.."],"p":{"K":"#05030F","P":"#7B4DFF","Y":"#FFD23F","S":"#F2C29B","W":"#F4F2FF","M":"#B5523B"}},"dj":{"r":["................",".....KKKKKK.....","....KHHHHHHK....","..KKKHHHHHHKKK..","..KCKSSSSSSKCK..","..KCKSKSSKSKCK..","..KKKSSSSSSKKK..","....KSSMMSSK....",".....KKKKKK.....","...KOOOOOOOOK...","..KOOOOOOOOOOK..","..KSOOOOOOOOSK..",".KKKKKKKKKKKKKK.",".KGGGGGKGGGGGGK.",".KGKKKGKGGRRGGK.",".KKKKKKKKKKKKKK."],"p":{"K":"#05030F","H":"#1E1E1E","C":"#3DDCFF","S":"#B97A50","M":"#6B2E1A","O":"#FF8A3D","G":"#8890A6","R":"#FF4D4D"}},"knight":{"r":["........R.......",".......RYR......","......KKKKK.....",".....KAAAAAK....","....KAAAAAAAK...","....KAKKKKKAK...","....KAKCKCKAK...","....KAAAAAAAK...",".....KKKKKKK....","...KKBBBBBBBKK..","..KAKBBYYBBKAK..","..KAKBBYYBBKAK..","...KKBBBBBBKK...","....KAAK.KAAK...","....KAAK.KAAK...","....KKKK.KKKK..."],"p":{"K":"#05030F","R":"#FF5DA2","Y":"#FFD23F","A":"#C9D2E3","C":"#3DDCFF","B":"#E0403A"}},"sis":{"r":["................",".....KKKKKK.....","....KHHHHHHK....","...KHHHDDHHHK...","...KHHSSSSHHK...","..KHHSKSSKSHHK..","..KHHSSSSSSHHK..","..KHHSSMMSSHHK..","..KHHHKSSKHHHK..","..KHHRRRRRRHHK..","..KHRRRRRRRRHK..","..KSRGGGGGGRSK..","...KRGKGGKGRK...","...KPPPPPPPPK...","....KPPK.KPPK...","....KTTK.KTTK..."],"p":{"K":"#05030F","H":"#9A6A44","D":"#6E4A2E","S":"#F2C7A5","M":"#B5523B","R":"#A85F69","G":"#8890A6","P":"#D5D6DE","T":"#C08A52"}},"homework":{"r":["................","................","....KKKKKKKK....","...KWWWWWWWWK...","...KWBBBBBBWK...","...KWWWWWWWWK...","...KWBBBBBWWK...","..KKWKKWWKKWK...","..KWWWKWWKWWWK..","..KWWWWWWWWWWK..","..KWBBMMMMBBWK..","..KWWWWWWWWWWK..","..KKKKKKKKKKKK..","..KAAAAAAAAAAK..","..KKKKKKKKKKKK..","................"],"p":{"K":"#05030F","W":"#F4F2FF","B":"#7FA7FF","M":"#E0403A","A":"#FF4D4D"}},"laundry":{"r":["................","................",".....G...R......","....GGG.RRR.....","...KGGGKRRRK....","..KKKKKKKKKKKK..","..KTTTTTTTTTTK..","..KTKTKTKTKTTK..","..KTTWKTTWKTTK..","..KTKKKTKKKTTK..","..KTTTTTTTTTTK..","..KTKTMMMMKTTK..","..KTTTTTTTTTTK..","...KTTTTTTTTK...","...KKKKKKKKKK...","................"],"p":{"K":"#05030F","G":"#3BD16F","R":"#FF5DA2","T":"#D9A55B","W":"#FFFFFF","M":"#05030F"}},"alarm":{"r":["................","..KK........KK..",".KYYK......KYYK.",".KYYKKKKKKKKYYK.","..KKRRRRRRRRKK..","...KRWWWWWWRK...","..KRWWWKWWWWRK..","..KRWWWKWWWWRK..","..KRWWWKKKWWRK..","..KRWWWWWWWWRK..","..KRWKWWWWKWRK..","...KRWWWWWWRK...","....KRRRRRRK....","...KK.KKKK.KK...","................","................"],"p":{"K":"#05030F","Y":"#FFD23F","R":"#FF4D4D","W":"#FFFFFF"}},"gift":{"r":["................","................",".....KK..KK.....","....KYYKKYYK....",".....KYYYYK.....","..KKKKKYYKKKKK..","..KCCCCYYCCCCK..","..KKKKKYYKKKKK..","...KCCCYYCCCK...","...KCCCYYCCCK...","...KCCCYYCCCK...","...KCCCYYCCCK...","...KCCCYYCCCK...","...KKKKKKKKKK...","................","................"],"p":{"K":"#05030F","Y":"#FFD23F","C":"#3DDCFF"}},"cake":{"r":[".......Y........",".......R........",".......W........",".....KKKKKK.....","....KPPPPPPK....","...KWPWPWPWPK...","...KTTTTTTTTK...","...KTTTTTTTTK...","..KPPPPPPPPPPK..","..KWPWPWPWPWPK..","..KTTTTTTTTTTK..","..KTTTTTTTTTTK..","..KTTTTTTTTTTK..",".KKKKKKKKKKKKKK.",".KAAAAAAAAAAAAK.",".KKKKKKKKKKKKKK."],"p":{"K":"#05030F","Y":"#FFD23F","R":"#FF8A3D","W":"#F4F2FF","P":"#FF8CC6","T":"#9A6234","A":"#C9D2E3"}},"heart":{"r":[".KK.KK.","KRRKRRK","KRWRRRK","KRRRRRK",".KRRRK.","..KRK..","...K..."],"p":{"K":"#05030F","R":"#FF4D6A","W":"#FFFFFF"}},"hero2":{"r":["................",".....KKKKKK.....","....KHHHHHHK....","...KHHLHHHHHK...","...KHHHHHHHSK...","...KFFFSSFFFK...","...KFEFFFFEFK...","...KFFFSSFFFK...","...KSSSMMSSSK...","....KKSSSSKK....","...KRRRKKRRRK...","..KRRRRKKRRRRK..","..KSRBRKKRBRSK..","...KRRRKKRRRK...","...KDDK..KDDK...","..KWWXK..KWWXK.."],"p":{"K":"#05030F","H":"#5A3A22","L":"#8A6040","S":"#F2C7A5","F":"#05030F","E":"#BFD8EE","M":"#B5523B","R":"#7A1F2B","B":"#1A1A1A","D":"#1E1E28","W":"#FFFFFF","X":"#E0403A"}},"herohold":{"r":[".KK..........KK.",".KSK.KKKKKK.KSK.",".KRKKHHHHHHKKRK.",".KRKHHLHHHHHKRK.",".KRKHHHHHHHSKRK.",".KRKFFFSSFFFKRK.",".KRKFEFFFFEFKRK.",".KRKFFFSSFFFKRK.",".KRKSSMMMMSSKRK.","..KKKKSSSSKKKK..","...KRRRKKRRRK...","...KRRRKKRRRK...","...KRBRKKRBRK...","...KRRRKKRRRK...","....KDDK.KDDK...","...KWWXK.KWWXK.."],"p":{"K":"#05030F","H":"#5A3A22","L":"#8A6040","S":"#F2C7A5","F":"#05030F","E":"#BFD8EE","M":"#B5523B","R":"#7A1F2B","B":"#1A1A1A","D":"#1E1E28","W":"#FFFFFF","X":"#E0403A"}},"parent":{"r":["................",".....KKKKKK.....","....KHHHHHHK....","....KHSSSSHK....","....KSKSSKSK....","....KSSSSSSK....",".....KSMMSK.....","......KSSK......","...KKGGGGGGKK...","..KGGGGGGGGGGK..","..KSKGGGGGGKWWK.","..KSKGGGGGGKWWWK","...KKGGGGGGKWWK.","....KNNNNNNK....","....KNNK.KNNK...","....KKKK.KKKK..."],"p":{"K":"#05030F","H":"#3A2A1E","S":"#E8B994","M":"#B5523B","G":"#2F8F6B","W":"#F4F2FF","N":"#2B2B5E"}}};
@@ -342,7 +371,7 @@ class App {
   resetGame(mode) {
     const best = this.g ? this.g.best : 0;
     this.g = { mode: mode, t: 0, speed: 6, dist: 0, y: 0, vy: 0, jumps: 0, lives: 3, inv: 0, gifts: 0, px: 90,
-      obs: [], items: [], nextObs: 500, nextGift: 350, cake: null, confetti: [], shake: 0, msg: '', best: best, endT: 0, lift: 0 };
+      obs: [], items: [], nextObs: 500, nextGift: 350, cake: null, hearts: [], nextHeart: 0, confetti: [], shake: 0, msg: '', best: best, endT: 0, lift: 0 };
   }
 
   crew() {
@@ -413,6 +442,7 @@ class App {
         this.addConfetti(70);
         this.duck();
         this.sfxSeq([64, 67, 72, 76, 79, 84], 0.11, 1.0);
+        if (this.onEnd) this.onEnd(this.score() + 1300, true);
       }
       return;
     }
@@ -433,6 +463,12 @@ class App {
       g.items.push({ x: W + 20, y: 60 + Math.random() * 50, ph: Math.random() * 6 });
       g.nextGift = g.dist + 320 + Math.random() * 420;
     }
+    if (!g.cake && g.lives < 3 && g.dist >= g.nextHeart) {
+      if (g.lives === 1 || Math.random() < 0.35) g.hearts.push({ x: W + 20, y: 50 + Math.random() * 60, ph: Math.random() * 6 });
+      g.nextHeart = g.dist + (g.lives === 1 ? 700 + Math.random() * 500 : 1600 + Math.random() * 1200);
+    }
+    g.hearts.forEach((h) => { h.x -= dx; });
+    g.hearts = g.hearts.filter((h) => h.x > -60 && !h.got);
     g.obs.forEach((o) => {
       o.x -= dx + (o.type === 'sis' ? 2.2 * f : 0);
       if (o.type === 'alarm') o.y = Math.abs(Math.sin((g.t + o.ph * 10) / 14)) * 34;
@@ -449,6 +485,7 @@ class App {
         g.inv = 0;
         g.obs = g.obs.filter((o) => o.x < g.px - 50);
         g.items = [];
+        g.hearts = [];
         return;
       }
     }
@@ -462,11 +499,13 @@ class App {
         g.inv = 90;
         g.shake = 12;
         this.explode();
+        if (g.lives === 1) g.nextHeart = Math.min(g.nextHeart, g.dist + 300);
         g.msg = { homework: 'HOMEWORK GOT YOU!', laundry: 'BURIED IN LAUNDRY!', alarm: 'SNOOZED OUT!', sis: 'SIS STOLE YOUR TURN!' }[o.type];
         if (g.lives <= 0) {
           g.mode = 'over'; g.endT = g.t;
           g.best = Math.max(g.best, this.score());
           this.sfxSeq([67, 63, 60, 55], 0.16, 0.5);
+          if (this.onEnd) this.onEnd(this.score(), false);
         }
         break;
       }
@@ -475,6 +514,13 @@ class App {
       const iy = GROUND - 48 - it.y + Math.sin((g.t + it.ph * 10) / 10) * 4;
       if (pR > it.x + 8 && pL < it.x + 40 && pBot > iy + 8 && pTop < iy + 40) {
         it.got = true; g.gifts++; this.sfxCoin();
+      }
+    }
+    for (const hh of g.hearts) {
+      const hy = GROUND - 48 - hh.y + Math.sin((g.t + hh.ph * 10) / 9) * 5;
+      if (pR > hh.x + 2 && pL < hh.x + 33 && pBot > hy + 2 && pTop < hy + 33) {
+        hh.got = true; g.lives = Math.min(3, g.lives + 1);
+        this.sfxSeq([72, 76, 79, 84], 0.06, 0.2);
       }
     }
   }
@@ -565,6 +611,11 @@ class App {
       const iy = GROUND - 48 - it.y + Math.sin((g.t + it.ph * 10) / 10) * 4;
       c.drawImage(this.spr('gift', 3), Math.floor(it.x), Math.floor(iy));
     });
+    g.hearts.forEach((hh) => {
+      const hy = GROUND - 48 - hh.y + Math.sin((g.t + hh.ph * 10) / 9) * 5;
+      c.drawImage(this.spr('heart', 5), Math.floor(hh.x), Math.floor(hy));
+      if (Math.floor(g.t / 10) % 2) this.star(Math.floor(hh.x) + 32, Math.floor(hy) + 2, 1, '#FFFFFF');
+    });
     const labels = { homework: 'HOMEWORK', laundry: 'CHORES', alarm: '6:30AM', sis: 'SIS' };
     g.obs.forEach((o) => {
       const oy = GROUND - 48 - o.y;
@@ -631,6 +682,8 @@ class App {
         this.txt('GET Q TO HIS PARTY!', W / 2, 82, 18, '#FFD23F', 'center');
         this.txt('Dodge chores, homework & Sis', W / 2, 116, 10, '#C9C4F0', 'center');
         if (blink) this.txt('TAP OR SPACE TO START', W / 2, 146, 12, '#3DDCFF', 'center');
+        const top = this.scores && this.scores[0];
+        if (top) this.txt('HIGH SCORE: ' + top.name + ' ' + top.score, W / 2, 194, 11, '#FF5DA2', 'center');
       } else {
         this.txt('GAME OVER', W / 2, 78, 20, '#FF5DA2', 'center');
         this.txt(g.msg || '', W / 2, 110, 11, '#F4F2FF', 'center');
@@ -669,6 +722,7 @@ class App {
   }
   layout() {
     const w = this.who, st = this.stage;
+    $('entry').hidden = true; $('board').hidden = true;
     $('select').hidden = !!w;
     $('page').hidden = !w;
     $('fab').hidden = !(w === 'parent' && !this.modal);
@@ -730,6 +784,8 @@ class App {
       else if (act === 'music') { if (this.musicTimer) this.stopMusic(); else this.startMusic(); }
       else if (act === 'full') this.goFullscreen();
       else if (act === 'rotateok') $('rotate').hidden = true;
+      else if (act === 'skip') { $('entry').hidden = true; }
+      else if (act === 'again') { $('board').hidden = true; this.resetGame('title'); try { cv.focus({ preventScroll: true }); } catch (x) {} }
       else if (act === 'info') { this.exitFs(); $('info').scrollIntoView({ behavior: 'smooth' }); }
     });
     window.addEventListener('resize', () => this.fit());
@@ -737,6 +793,15 @@ class App {
     document.addEventListener('fullscreenchange', () => setTimeout(() => this.fit(), 50));
     document.addEventListener('webkitfullscreenchange', () => setTimeout(() => this.fit(), 50));
 
+    $('entry').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = this.cleanName($('nameIn').value);
+      try { localStorage.setItem('q13name', name); } catch (x) {}
+      $('entry').hidden = true;
+      const mine = { name: name, score: this.lastScore };
+      this.submitScore(name, this.lastScore).then(() => { this.renderBoards(mine); $('board').hidden = false; });
+    });
+    this.loadScores();
     this.resetGame('title');
     let last = 0;
     const loop = (ts) => {
@@ -748,6 +813,66 @@ class App {
     requestAnimationFrame(loop);
     this.setMusicLabel();
     this.layout();
+  }
+  // ---- high scores ----
+  cleanName(n) {
+    let s = String(n || '').toUpperCase().replace(/[^A-Z0-9 ]/g, '').trim().slice(0, 10);
+    const bad = ['FUCK', 'SHIT', 'BITCH', 'DICK', 'CUNT', 'PUSSY', 'COCK', 'SLUT', 'WHORE', 'PENIS', 'NIGG', 'FAG', 'SEX', 'BUTT', 'POOP'];
+    if (bad.some((w) => s.replace(/ /g, '').indexOf(w) >= 0)) s = 'PLAYER';
+    return s || 'PLAYER';
+  }
+  localScores() { try { return JSON.parse(localStorage.getItem('q13scores') || '[]'); } catch (e) { return []; } }
+  saveLocal(list) { try { localStorage.setItem('q13scores', JSON.stringify(list)); } catch (e) {} }
+  loadScores() {
+    this.scores = this.localScores();
+    this.renderBoards();
+    if (!CONFIG.scoresUrl) return Promise.resolve();
+    return fetch(CONFIG.scoresUrl).then((r) => r.json()).then((list) => {
+      if (Array.isArray(list)) { this.scores = list.slice(0, 10); this.renderBoards(); }
+    }).catch(() => {});
+  }
+  submitScore(name, score) {
+    const entry = { name: name, score: score };
+    const local = this.localScores().concat([entry]).sort((a, b) => b.score - a.score).slice(0, 10);
+    this.saveLocal(local);
+    if (!CONFIG.scoresUrl) { this.scores = local; return Promise.resolve(); }
+    return fetch(CONFIG.scoresUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(entry) })
+      .then((r) => r.json()).then((list) => { if (Array.isArray(list)) this.scores = list.slice(0, 10); })
+      .catch(() => { this.scores = local; });
+  }
+  fillList(ol, mine) {
+    ol.innerHTML = '';
+    (this.scores || []).slice(0, 10).forEach((s, i) => {
+      const li = document.createElement('li');
+      if (mine && s.name === mine.name && s.score === mine.score && !mine.marked) { li.className = 'me'; mine.marked = true; }
+      const b = document.createElement('b'); b.textContent = (i + 1) + '.';
+      const sp = document.createElement('span'); sp.textContent = ' ' + s.score;
+      li.appendChild(b); li.appendChild(document.createTextNode(' ' + s.name)); li.appendChild(sp);
+      ol.appendChild(li);
+    });
+  }
+  renderBoards(mine) {
+    this.fillList($('boardList'), mine ? Object.assign({}, mine) : null);
+    this.fillList($('pageBoard'), null);
+    $('pageBoardEmpty').hidden = (this.scores || []).length > 0;
+  }
+  qualifies(s) {
+    const l = this.scores || [];
+    return s > 0 && (l.length < 10 || s > l[l.length - 1].score);
+  }
+  onEnd(score, won) {
+    const runT = this.g.t;
+    this.lastScore = score;
+    setTimeout(() => {
+      if (!this.g || this.g.t < runT || this.stage.hidden) return;
+      if (!this.qualifies(score)) return;
+      $('entryScore').textContent = 'SCORE ' + score;
+      let last = ''; try { last = localStorage.getItem('q13name') || ''; } catch (e) {}
+      $('nameIn').value = last;
+      $('entry').hidden = false;
+      this.exitFs();
+      setTimeout(() => { try { $('nameIn').focus(); } catch (e) {} }, 50);
+    }, won ? 3200 : 900);
   }
   exitFs() {
     try {
