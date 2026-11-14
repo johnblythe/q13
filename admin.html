@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Q13 RSVPs</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif;background:#0E0B2B;color:#F4F2FF;padding:20px}
+h1{font-size:20px;margin:0 0 12px}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stats div{background:#17134A;border:2px solid #3DDCFF;padding:10px 14px;font-size:14px}
+.stats b{display:block;font-size:24px;color:#FFD23F}
+.wrap{overflow-x:auto;border:2px solid #2A2463}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:900px}
+th,td{padding:8px 10px;border-bottom:1px solid #2A2463;text-align:left;vertical-align:top}
+th{background:#17134A;color:#3DDCFF;position:sticky;top:0}
+tr.no td{color:#8E89B8}
+.yes{color:#3BD16F;font-weight:700}.maybe{color:#FFD23F;font-weight:700}.no{color:#FF7A74;font-weight:700}
+button{font:inherit;padding:10px 14px;background:#FFD23F;border:0;color:#0E0B2B;font-weight:700;cursor:pointer;margin-right:8px}
+#err{color:#FF7A74}
+textarea{width:100%;height:120px;margin-top:10px;background:#17134A;color:#F4F2FF;border:1px solid #5A54A8}
+</style>
+</head>
+<body>
+<h1>Quintynn's Level 13 Party: RSVPs</h1>
+<div id="err"></div>
+<div class="stats" id="stats"></div>
+<p><button id="reload" type="button">Refresh</button><button id="csv" type="button">Copy as CSV</button></p>
+<textarea id="csvOut" hidden readonly></textarea>
+<div class="wrap"><table><thead><tr><th>Player</th><th>Status</th><th>Parent</th><th>Phone</th><th>Drop-off</th><th>Allergies</th><th>Games</th><th>Gamer tag</th><th>Notes</th><th>Updated</th></tr></thead><tbody id="rows"></tbody></table></div>
+<script>
+(function () {
+const BIN = 'https://api.npoint.io/df6f8184e2e84b3d4173';
+const $ = (id) => document.getElementById(id);
+let rows = [];
+function unb64(s) { const b = atob(s); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+function keyFromHash() {
+  const m = location.hash.match(/k=([^&]+)/);
+  if (!m) return null;
+  try { const s = m[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(atob(s)); } catch (e) { return null; }
+}
+async function open(sk, x) {
+  const S = crypto.subtle;
+  const raw = await S.decrypt({ name: 'RSA-OAEP' }, sk, unb64(x.k));
+  const k = await S.importKey('raw', raw, { name: 'AES-GCM' }, false, ['decrypt']);
+  const pt = await S.decrypt({ name: 'AES-GCM', iv: unb64(x.iv) }, k, unb64(x.c));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+function td(tr, text, cls) { const c = document.createElement('td'); c.textContent = text || ''; if (cls) c.className = cls; tr.appendChild(c); }
+async function load() {
+  const jwk = keyFromHash();
+  if (!jwk) { $('err').textContent = 'Missing key. Open this page with the full private link.'; return; }
+  let sk;
+  try { sk = await crypto.subtle.importKey('jwk', jwk, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']); }
+  catch (e) { $('err').textContent = 'Key in the link is invalid.'; return; }
+  const list = await fetch(BIN, { cache: 'no-store' }).then((r) => r.json()).catch(() => []);
+  rows = [];
+  for (const e of (Array.isArray(list) ? list : [])) {
+    let d = {};
+    try { d = await open(sk, e.x); } catch (err) { d = { kid: e.kid + ' (unreadable)' }; }
+    rows.push(Object.assign({ status: e.status, t: e.t }, d));
+  }
+  const order = { yes: 0, maybe: 1, no: 2 };
+  rows.sort((a, b) => (order[a.status] - order[b.status]) || (a.t - b.t));
+  const tb = $('rows'); tb.innerHTML = '';
+  rows.forEach((r) => {
+    const tr = document.createElement('tr'); if (r.status === 'no') tr.className = 'no';
+    td(tr, r.kid); td(tr, r.status === 'yes' ? 'Yes' : r.status === 'maybe' ? 'Maybe' : 'No', r.status);
+    td(tr, r.parent); td(tr, r.phone); td(tr, r.dropoff); td(tr, r.allergies); td(tr, (r.games || []).join(', ')); td(tr, r.tag); td(tr, r.notes);
+    td(tr, r.t ? new Date(r.t).toLocaleString() : '');
+    tb.appendChild(tr);
+  });
+  const n = (s) => rows.filter((r) => r.status === s).length;
+  const allergy = rows.filter((r) => r.status !== 'no' && r.allergies).length;
+  const stay = rows.filter((r) => r.status !== 'no' && r.dropoff === 'A parent will stay').length;
+  $('stats').innerHTML = '';
+  [['Coming', n('yes')], ['Maybe', n('maybe')], ['Can’t', n('no')], ['Allergy notes', allergy], ['Parents staying', stay]].forEach((s) => {
+    const d = document.createElement('div'); const b = document.createElement('b'); b.textContent = s[1]; d.appendChild(b); d.appendChild(document.createTextNode(s[0])); $('stats').appendChild(d);
+  });
+  $('err').textContent = '';
+}
+$('reload').onclick = load;
+$('csv').onclick = () => {
+  const cols = ['kid', 'status', 'parent', 'phone', 'dropoff', 'allergies', 'games', 'tag', 'notes'];
+  const esc = (v) => '"' + String(Array.isArray(v) ? v.join('; ') : (v || '')).replace(/"/g, '""') + '"';
+  const out = [cols.join(',')].concat(rows.map((r) => cols.map((c) => esc(r[c])).join(','))).join('\n');
+  const ta = $('csvOut'); ta.hidden = false; ta.value = out; ta.select();
+  try { navigator.clipboard.writeText(out); } catch (e) {}
+};
+load();
+})();
+</script>
+</body>
+</html>
