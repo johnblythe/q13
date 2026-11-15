@@ -249,7 +249,6 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
         <label><input type="radio" name="status" value="no"> Can't make it</label></div></fieldset>
       <label>Parent/guardian name <span class="req">*</span><input type="text" name="parent" maxlength="60" autocomplete="name" required></label>
       <label>Parent phone (pickup &amp; updates) <span class="req">*</span><input type="tel" name="phone" maxlength="30" autocomplete="tel" required></label>
-      <label>Drop-off or staying?<select name="dropoff"><option value="">Choose one</option><option>Dropping off</option><option>A parent will stay</option><option>Not sure yet</option></select></label>
       <label>Food allergies or dietary needs<input type="text" name="allergies" maxlength="200"></label>
       <fieldset class="full"><legend>Favorite games right now</legend><div class="pills">
         <label><input type="checkbox" name="games" value="Pokémon"> Pokémon</label>
@@ -976,7 +975,7 @@ class App {
     const f = $('rsvpForm');
     let saved = null; try { saved = JSON.parse(localStorage.getItem('q13rsvp') || 'null'); } catch (e) {}
     if (saved) {
-      ['kid', 'parent', 'phone', 'dropoff', 'allergies', 'tag', 'notes'].forEach((n) => { if (f.elements[n] && saved[n]) f.elements[n].value = saved[n]; });
+      ['kid', 'parent', 'phone', 'allergies', 'tag', 'notes'].forEach((n) => { if (f.elements[n] && saved[n]) f.elements[n].value = saved[n]; });
       f.querySelectorAll('[name=status]').forEach((r) => { r.checked = r.value === saved.status; });
       f.querySelectorAll('[name=games]').forEach((c) => { c.checked = (saved.games || []).indexOf(c.value) >= 0; });
       $('rsvpBtn').textContent = 'UPDATE RSVP';
@@ -997,7 +996,7 @@ class App {
       if (missing.length) { msg.style.color = 'var(--p)'; msg.textContent = 'NEED: ' + missing.join(', ').toUpperCase(); return; }
       let id = ''; try { id = localStorage.getItem('q13rsvpId') || ''; } catch (x) {}
       if (!id) { id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); try { localStorage.setItem('q13rsvpId', id); } catch (x) {} }
-      const priv = { kid: v('kid'), parent: v('parent'), phone: v('phone'), dropoff: v('dropoff'), allergies: v('allergies'), games: games, tag: v('tag'), notes: v('notes') };
+      const priv = { kid: v('kid'), parent: v('parent'), phone: v('phone'), allergies: v('allergies'), games: games, tag: v('tag'), notes: v('notes') };
       const btn = $('rsvpBtn'); btn.disabled = true; msg.style.color = 'var(--muted)'; msg.textContent = 'SAVING...';
       this.seal(priv).then((x) => {
         const entry = { id: id, kid: this.firstName(priv.kid), status: st, t: Date.now(), x: x };

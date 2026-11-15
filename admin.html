@@ -28,7 +28,7 @@ textarea{width:100%;height:120px;margin-top:10px;background:#17134A;color:#F4F2F
 <div class="stats" id="stats"></div>
 <p><button id="reload" type="button">Refresh</button><button id="csv" type="button">Copy as CSV</button></p>
 <textarea id="csvOut" hidden readonly></textarea>
-<div class="wrap"><table><thead><tr><th>Player</th><th>Status</th><th>Parent</th><th>Phone</th><th>Drop-off</th><th>Allergies</th><th>Games</th><th>Gamer tag</th><th>Notes</th><th>Updated</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="wrap"><table><thead><tr><th>Player</th><th>Status</th><th>Parent</th><th>Phone</th><th>Allergies</th><th>Games</th><th>Gamer tag</th><th>Notes</th><th>Updated</th></tr></thead><tbody id="rows"></tbody></table></div>
 <script>
 (function () {
 const BIN = 'https://api.npoint.io/df6f8184e2e84b3d4173';
@@ -67,22 +67,21 @@ async function load() {
   rows.forEach((r) => {
     const tr = document.createElement('tr'); if (r.status === 'no') tr.className = 'no';
     td(tr, r.kid); td(tr, r.status === 'yes' ? 'Yes' : r.status === 'maybe' ? 'Maybe' : 'No', r.status);
-    td(tr, r.parent); td(tr, r.phone); td(tr, r.dropoff); td(tr, r.allergies); td(tr, (r.games || []).join(', ')); td(tr, r.tag); td(tr, r.notes);
+    td(tr, r.parent); td(tr, r.phone); td(tr, r.allergies); td(tr, (r.games || []).join(', ')); td(tr, r.tag); td(tr, r.notes);
     td(tr, r.t ? new Date(r.t).toLocaleString() : '');
     tb.appendChild(tr);
   });
   const n = (s) => rows.filter((r) => r.status === s).length;
   const allergy = rows.filter((r) => r.status !== 'no' && r.allergies).length;
-  const stay = rows.filter((r) => r.status !== 'no' && r.dropoff === 'A parent will stay').length;
   $('stats').innerHTML = '';
-  [['Coming', n('yes')], ['Maybe', n('maybe')], ['Can’t', n('no')], ['Allergy notes', allergy], ['Parents staying', stay]].forEach((s) => {
+  [['Coming', n('yes')], ['Maybe', n('maybe')], ['Can’t', n('no')], ['Allergy notes', allergy]].forEach((s) => {
     const d = document.createElement('div'); const b = document.createElement('b'); b.textContent = s[1]; d.appendChild(b); d.appendChild(document.createTextNode(s[0])); $('stats').appendChild(d);
   });
   $('err').textContent = '';
 }
 $('reload').onclick = load;
 $('csv').onclick = () => {
-  const cols = ['kid', 'status', 'parent', 'phone', 'dropoff', 'allergies', 'games', 'tag', 'notes'];
+  const cols = ['kid', 'status', 'parent', 'phone', 'allergies', 'games', 'tag', 'notes'];
   const esc = (v) => '"' + String(Array.isArray(v) ? v.join('; ') : (v || '')).replace(/"/g, '""') + '"';
   const out = [cols.join(',')].concat(rows.map((r) => cols.map((c) => esc(r[c])).join(','))).join('\n');
   const ta = $('csvOut'); ta.hidden = false; ta.value = out; ta.select();
