@@ -199,8 +199,8 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
 
   <div class="grid3">
     <div class="info"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD23F" stroke-width="2" stroke-linecap="square"><rect x="3" y="5" width="18" height="16"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg><div class="k" style="color:var(--y)">WHEN</div><div class="v">Saturday, Dec 12</div><div class="s" id="timeLabel"></div></div>
-    <div class="info" style="border-color:var(--c)"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3DDCFF" stroke-width="2" stroke-linecap="square"><path d="M12 22s7-7 7-12a7 7 0 0 0-14 0c0 5 7 12 7 12z"></path><rect x="10" y="8" width="4" height="4"></rect></svg><div class="k" style="color:var(--c)">DROP ZONE</div><div class="v">[ADDRESS]</div><div class="s">Indianapolis</div></div>
-    <div class="info" style="border-color:var(--p)"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF5DA2" stroke-width="2" stroke-linecap="square"><rect x="2" y="7" width="20" height="11" rx="2"></rect><path d="M7 10v5M4.5 12.5h5M15 11h.01M18 14h.01"></path></svg><div class="k" style="color:var(--p)">THE MISSION</div><div class="v">Games, food &amp; cake</div><div class="s">Bring your A-game</div></div>
+    <div class="info" style="border-color:var(--c)"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3DDCFF" stroke-width="2" stroke-linecap="square"><path d="M12 22s7-7 7-12a7 7 0 0 0-14 0c0 5 7 12 7 12z"></path><rect x="10" y="8" width="4" height="4"></rect></svg><div class="k" style="color:var(--c)">DROP ZONE</div><div class="v">5621 E 75th St</div><div class="s">Indianapolis 46250 · drop-off &amp; pick-up</div></div>
+    <div class="info" style="border-color:var(--p)"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF5DA2" stroke-width="2" stroke-linecap="square"><rect x="2" y="7" width="20" height="11" rx="2"></rect><path d="M7 10v5M4.5 12.5h5M15 11h.01M18 14h.01"></path></svg><div class="k" style="color:var(--p)">THE MISSION</div><div class="v">Squad trip to Activate</div><div class="s">We'll drive the crew over. Bring your A-game!</div></div>
   </div>
 
   <div class="sec">
@@ -274,7 +274,7 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
 <script>
 (function () {
 const CONFIG = {
-  timeSlot: '12:00 – 2:00 PM',      // or '4:00 – 6:00 PM'
+  timeSlot: '5:00 – 8:00 PM',
   scoresUrl: 'https://api.npoint.io/a4fda1064040d5306a7f',                    // JSON bin URL (npoint) for the shared leaderboard
   rsvpBin: 'https://api.npoint.io/df6f8184e2e84b3d4173'
 };
@@ -799,7 +799,7 @@ class App {
   }
   tick() {
     const slot = CONFIG.timeSlot;
-    const startHour = slot.indexOf('4:00') === 0 ? 16 : 12;
+    const startHour = (parseInt(slot, 10) % 12) + (/PM/.test(slot) ? 12 : 0);
     let diff = Math.max(0, Date.UTC(2026, 11, 12, startHour + 5) - Date.now());
     const pad = (n) => String(n).padStart(2, '0');
     const d = Math.floor(diff / 86400000); diff -= d * 86400000;
