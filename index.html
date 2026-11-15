@@ -242,26 +242,23 @@ main{max-width:960px;margin:0 auto;padding:28px 16px 90px;display:flex;flex-dire
   <div class="sec" id="rsvpSec" style="scroll-margin-top:16px">
     <h2 style="color:var(--y);font-size:14px">READY UP · RSVP</h2>
     <form id="rsvpForm" class="panel rsvpf" style="border-color:var(--y)" novalidate>
-      <label>Player's name (your kid) <span class="req">*</span><input type="text" name="kid" maxlength="40" autocomplete="off" required></label>
+      <label><span>Player's name (your kid) <span class="req">*</span></span><input type="text" name="kid" maxlength="40" autocomplete="off" required></label>
       <fieldset><legend>Can they make it? <span class="req">*</span></legend><div class="pills">
         <label><input type="radio" name="status" value="yes" required> Yes, they're in!</label>
         <label><input type="radio" name="status" value="maybe"> Maybe</label>
         <label><input type="radio" name="status" value="no"> Can't make it</label></div></fieldset>
-      <label>Parent/guardian name <span class="req">*</span><input type="text" name="parent" maxlength="60" autocomplete="name" required></label>
-      <label>Parent phone (pickup &amp; updates) <span class="req">*</span><input type="tel" name="phone" maxlength="30" autocomplete="tel" required></label>
-      <label>Food allergies or dietary needs<input type="text" name="allergies" maxlength="200"></label>
+      <label><span>Parent/guardian name <span class="req">*</span></span><input type="text" name="parent" maxlength="60" autocomplete="name" required></label>
+      <label><span>Parent phone (pickup &amp; updates) <span class="req">*</span></span><input type="tel" name="phone" maxlength="30" autocomplete="tel" required></label>
       <fieldset class="full"><legend>Favorite games right now</legend><div class="pills">
         <label><input type="checkbox" name="games" value="Pokémon"> Pokémon</label>
         <label><input type="checkbox" name="games" value="Fortnite"> Fortnite</label>
         <label><input type="checkbox" name="games" value="Brawl Stars"> Brawl Stars</label>
         <label><input type="checkbox" name="games" value="Minecraft"> Minecraft</label>
         <label><input type="checkbox" name="games" value="Roblox"> Roblox</label></div></fieldset>
-      <label>Gamer tag (optional)<input type="text" name="tag" maxlength="30" autocomplete="off"></label>
-      <label>Anything else?<input type="text" name="notes" maxlength="300"></label>
       <div class="full" style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:6px">
         <button type="submit" class="rsvp" id="rsvpBtn">READY UP · RSVP</button>
         <div id="rsvpMsg" role="status"></div>
-        <div style="font-size:15px;color:var(--muted)">Please RSVP by Saturday, Dec 5. Contact info is encrypted, so only John can read it. Questions? Text John.</div>
+        <div style="font-size:15px;color:var(--muted)">Please RSVP by Saturday, Dec 5. Parent contact info is encrypted, so only John can read it. Questions? Text John.</div>
       </div>
     </form>
   </div>
@@ -975,7 +972,7 @@ class App {
     const f = $('rsvpForm');
     let saved = null; try { saved = JSON.parse(localStorage.getItem('q13rsvp') || 'null'); } catch (e) {}
     if (saved) {
-      ['kid', 'parent', 'phone', 'allergies', 'tag', 'notes'].forEach((n) => { if (f.elements[n] && saved[n]) f.elements[n].value = saved[n]; });
+      ['kid', 'parent', 'phone'].forEach((n) => { if (f.elements[n] && saved[n]) f.elements[n].value = saved[n]; });
       f.querySelectorAll('[name=status]').forEach((r) => { r.checked = r.value === saved.status; });
       f.querySelectorAll('[name=games]').forEach((c) => { c.checked = (saved.games || []).indexOf(c.value) >= 0; });
       $('rsvpBtn').textContent = 'UPDATE RSVP';
@@ -996,7 +993,7 @@ class App {
       if (missing.length) { msg.style.color = 'var(--p)'; msg.textContent = 'NEED: ' + missing.join(', ').toUpperCase(); return; }
       let id = ''; try { id = localStorage.getItem('q13rsvpId') || ''; } catch (x) {}
       if (!id) { id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); try { localStorage.setItem('q13rsvpId', id); } catch (x) {} }
-      const priv = { kid: v('kid'), parent: v('parent'), phone: v('phone'), allergies: v('allergies'), games: games, tag: v('tag'), notes: v('notes') };
+      const priv = { kid: v('kid'), parent: v('parent'), phone: v('phone'), games: games };
       const btn = $('rsvpBtn'); btn.disabled = true; msg.style.color = 'var(--muted)'; msg.textContent = 'SAVING...';
       this.seal(priv).then((x) => {
         const entry = { id: id, kid: this.firstName(priv.kid), status: st, t: Date.now(), x: x };
